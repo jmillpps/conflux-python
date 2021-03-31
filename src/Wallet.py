@@ -1,4 +1,5 @@
 from .Util import keccak256, polymod, randomkey
+import hashlib
 import ecdsa
 import re
 
@@ -17,8 +18,18 @@ class Wallet:
             raise Exception(Wallet.Address.type_warning_string(type))
         self.type = type
         self.network_prefix = network_prefix
-        self.private_key = ecdsa.SigningKey.from_string(private_key, curve=ecdsa.SECP256k1)
+        self.private_key = ecdsa.SigningKey.from_string(private_key, curve=ecdsa.SECP256k1, hashfunc=hashlib.sha256)
         self.public_key = self.private_key.verifying_key
+        if not self.test_keys():
+            raise Exception('Unable to verify generated key')
+    def test_keys(self):
+        message = randomkey()
+        signature = self.sign(message)
+        signature_check = self.public_key.verify(signature, message)
+        recovered_addresses = Wallet.Address.recover_possible_addresses(signature, message, self.type, self.network_prefix, include_type=True)
+        address = self.public_address(include_type=True)
+        address_recovered = address in recovered_addresses
+        return signature_check and address_recovered
     def public_address(self, include_type=True):
         return Wallet.Address.ptoa(self.public_key, self.type, self.network_prefix, include_type)
     def sign(self, message):
@@ -32,7 +43,6 @@ class Wallet:
         def type_warning_string(type):
             return f'Wallet of type "{type}" is not acceptable. Wallet type must be one of {", ".join([key for key in Wallet.Address.acceptable_types])}'
         def htoa(public_key_hex, type, network_prefix, include_type=True):
-            print(public_key_hex)
             _binary = '00000000' + bin(int(public_key_hex, base=16))[2:].zfill(160) + '00'
             _chunks = [int(_binary[i:i+5], 2) for i in range(0, len(_binary), 5)]
             _base32 = ''.join([Wallet.Address.base32_alphabet[position] for position in _chunks])
@@ -66,3 +76,20 @@ class Wallet:
             self.address = bytes([int(_binary[i * 8:(i+1)*8], 2) for i in range(1, int(_address_size / 8) + 1)])
         def get_address(self):
             return Wallet.Address.htoa(self.address.hex(), self.type, self.network_prefix)
+        def recover_possible_addresses(signature, message, type, network_prefix, include_type=True):
+            curve = ecdsa.curves.SECP256k1
+            recovered_public_keys = ecdsa.VerifyingKey.from_public_key_recovery(signature, message, ecdsa.curves.SECP256k1, hashfunc=hashlib.sha256)
+            verified_public_keys = []
+            return [Wallet.Address.ptoa(public_key, type, network_prefix, include_type) for public_key in recovered_public_keys if public_key.verify(signature, message)]
+        def verify_address_signature(public_address, signature, message):
+            split = public_address.split(':')
+            recovered_public_addresses = []
+            if len(split) == 3:
+                recovered_public_addresses = Wallet.Address.recover_possible_addresses(signature, message, split[1].split('.', 2)[1], split[0])
+            if len(split) == 2:
+                type = Wallet.Address.base32_alphabet.index(split[1][0]) & 30
+                type = Wallet.Address.acceptable_type_values[type]
+                recovered_public_addresses = Wallet.Address.recover_possible_addresses(signature, message, type, split[0], False)
+            print(f'Verify: {public_address}')
+            print(f'Recovered: {recovered_public_addresses}')
+            return public_address in recovered_public_addresses

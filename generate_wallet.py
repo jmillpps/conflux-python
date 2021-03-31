@@ -1,7 +1,21 @@
 from src.Wallet import Wallet
 import os
+import ecdsa
 
 wallet = Wallet(private_key=os.urandom(32), type='user', network_prefix='cfx')
-print(f'wallet address: {wallet.public_address()}')
-addr = Wallet.Address(wallet.public_address())
-print(f'addr address: {addr.get_address()}')
+address = wallet.public_address()
+print(f'Wallet Address: {address}')
+message = b'Test message to sign'
+print(f'Test Message: {message}')
+signature = wallet.sign(message)
+print(f'Signature: {signature.hex()}')
+recovered_keys = Wallet.Address.recover_possible_addresses(signature, message, wallet.type, wallet.network_prefix)
+print('Recovered Keys:')
+for possible_address in recovered_keys:
+    char = ' '
+    if possible_address == address:
+        char = '*'
+    print(f' {char} {possible_address}')
+Wallet.Address.verify_address_signature(address, signature, message)
+address = address = wallet.public_address(False)
+Wallet.Address.verify_address_signature(address, signature, message)

@@ -1,5 +1,6 @@
 from Crypto.Hash import keccak
 import os
+import ecdsa
 
 def keccak256(input):
     keccak_hash = keccak.new(digest_bits=256)
@@ -25,4 +26,3 @@ def polymod(values):
 
 def randomkey():
     return os.urandom(32)
-
