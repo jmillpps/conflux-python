@@ -4,8 +4,11 @@ import ecdsa
 
 wallet = Wallet(private_key=os.urandom(32), type='user', network_prefix='cfx')
 address = wallet.public_address()
+old_address = wallet.old_public_address()
+print(len(old_address))
 print(f'Wallet Address: {address}')
-message = b'Test message to sign'
+print(f'Old Wallet Address: {old_address}')
+message = b'Message for ECDSA signing'
 print(f'Test Message: {message}')
 signature = wallet.sign(message)
 print(f'Signature: {signature.hex()}')

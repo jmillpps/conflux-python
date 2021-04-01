@@ -30,6 +30,8 @@ class Wallet:
         address = self.public_address(include_type=True)
         address_recovered = address in recovered_addresses
         return signature_check and address_recovered
+    def old_public_address(self):
+        return '0x' + str(Wallet.Address.acceptable_types[self.type]) + keccak256(self.public_key.to_string())[25:64]
     def public_address(self, include_type=True):
         return Wallet.Address.ptoa(self.public_key, self.type, self.network_prefix, include_type)
     def sign(self, message):
@@ -43,7 +45,10 @@ class Wallet:
         def type_warning_string(type):
             return f'Wallet of type "{type}" is not acceptable. Wallet type must be one of {", ".join([key for key in Wallet.Address.acceptable_types])}'
         def htoa(public_key_hex, type, network_prefix, include_type=True):
-            public_key_hex = '1' + public_key_hex[1:]
+            if type == 'user':
+                public_key_hex = '1' + public_key_hex[1:]
+            elif type == 'contract':
+                public_key_hex = '8' + public_key_hex[1:]
             _binary = '00000000' + bin(int(public_key_hex, base=16))[2:].zfill(160) + '00'
             _chunks = [int(_binary[i:i+5], 2) for i in range(0, len(_binary), 5)]
             _base32 = ''.join([Wallet.Address.base32_alphabet[position] for position in _chunks])
