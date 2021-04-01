@@ -16,6 +16,8 @@ for possible_address in recovered_keys:
     if possible_address == address:
         char = '*'
     print(f' {char} {possible_address}')
-Wallet.Address.verify_address_signature(address, signature, message)
+verified_address = Wallet.Address.verify_address_signature(address, signature, message)
+print(f'long address verified: {verified_address} ({address})')
 address = address = wallet.public_address(False)
-Wallet.Address.verify_address_signature(address, signature, message)
+verified_address = Wallet.Address.verify_address_signature(address, signature, message)
+print(f'short address verified: {verified_address} ({address})')

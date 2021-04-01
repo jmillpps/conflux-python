@@ -43,6 +43,7 @@ class Wallet:
         def type_warning_string(type):
             return f'Wallet of type "{type}" is not acceptable. Wallet type must be one of {", ".join([key for key in Wallet.Address.acceptable_types])}'
         def htoa(public_key_hex, type, network_prefix, include_type=True):
+            public_key_hex = '1' + public_key_hex[1:]
             _binary = '00000000' + bin(int(public_key_hex, base=16))[2:].zfill(160) + '00'
             _chunks = [int(_binary[i:i+5], 2) for i in range(0, len(_binary), 5)]
             _base32 = ''.join([Wallet.Address.base32_alphabet[position] for position in _chunks])
@@ -90,6 +91,4 @@ class Wallet:
                 type = Wallet.Address.base32_alphabet.index(split[1][0]) & 30
                 type = Wallet.Address.acceptable_type_values[type]
                 recovered_public_addresses = Wallet.Address.recover_possible_addresses(signature, message, type, split[0], False)
-            print(f'Verify: {public_address}')
-            print(f'Recovered: {recovered_public_addresses}')
             return public_address in recovered_public_addresses
