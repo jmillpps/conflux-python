@@ -14,6 +14,7 @@ conflux-python is a python-based implementation of Conflux protocol
 
 ## Example (generate_wallet.py):
 
+```python
 $ python3 generate_wallet.py
 Wallet Address: cfx:type.user:aark79pfpv18hpns77vfmv53bgptpj1zajvhdewada
 Old Wallet Address: 0x1a9efd85646fe3b16eef625547790998f622f502
@@ -39,3 +40,4 @@ short address verified: False (cfx:aark79pfpv18hpns77vfmv53bgptpj1zajvhdewada)
     },
     "id": 1
 }
+```
