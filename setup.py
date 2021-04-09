@@ -1,8 +1,8 @@
 from distutils.core import setup
 setup(
-  name = 'conflux-python',         # How you named your package folder (MyLib)
-  packages = ['conflux-python'],   # Chose the same as "name"
-  version = '0.3',      # Start with a small number and increase it with every change you make
+  name = 'pyconflux',         # How you named your package folder (MyLib)
+  packages = ['pyconflux'],   # Chose the same as "name"
+  version = '0.4',      # Start with a small number and increase it with every change you make
   license='gpl-3.0',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'python-based implementation of Conflux protocol',   # Give a short description about your library
   author = 'Justin Miller',                   # Type in your name
