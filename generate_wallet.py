@@ -1,11 +1,11 @@
 from src.Wallet import Wallet
-import os
-import ecdsa
+from src.RPC import HTTPClient
+from src.Util import randomkey
+import json
 
-wallet = Wallet(private_key=os.urandom(32), type='user', network_prefix='cfx')
+wallet = Wallet(private_key=randomkey(32), type='user', network_prefix='cfx')
 address = wallet.public_address()
 old_address = wallet.old_public_address()
-print(len(old_address))
 print(f'Wallet Address: {address}')
 print(f'Old Wallet Address: {old_address}')
 message = b'Message for ECDSA signing'
@@ -24,3 +24,6 @@ print(f'long address verified: {verified_address} ({address})')
 address = address = wallet.public_address(False)
 verified_address = Wallet.Address.verify_address_signature(address, signature, message)
 print(f'short address verified: {verified_address} ({address})')
+
+client = HTTPClient('https://test.confluxrpc.com')
+print(json.dumps(client.getStatus(), indent=4))

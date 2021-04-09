@@ -24,5 +24,5 @@ def polymod(values):
             c ^= 0x1e4f43e470
     return c ^ 1
 
-def randomkey():
-    return os.urandom(32)
+def randomkey(bytes=32):
+    return os.urandom(bytes)
