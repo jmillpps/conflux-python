@@ -1,6 +1,5 @@
-from src.Wallet import Wallet
-from src.RPC import HTTPClient
-from src.Util import randomkey
+from pyconflux import Wallet, HTTPClient
+from pyconflux.Util import randomkey
 import json
 
 wallet = Wallet(private_key=randomkey(32), type='user', network_prefix='cfx')
